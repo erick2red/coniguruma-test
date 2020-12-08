@@ -8,13 +8,8 @@ let package = Package(
     platforms: [
         .macOS(.v11)
     ],
-    dependencies: [
-        // Dependencies declare other packages that this package depends on.
-        .package(url: "../coniguruma", from: "0.0.12")
-    ],
     targets: [
-        // Targets are the basic building blocks of a package. A target can define a module or a test suite.
-        // Targets can depend on other targets in this package, and on products in packages this package depends on.
+        .systemLibrary(name: "coniguruma", pkgConfig: "oniguruma", providers: [.brew(["oniguruma"])]),
         .target(
             name: "coniguruma-test",
             dependencies: ["coniguruma"]),
