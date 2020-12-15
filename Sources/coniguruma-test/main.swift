@@ -7,6 +7,11 @@ enum StandardError: Error {
     case generic(String)
 }
 
+struct Encodings {
+    static let utf8: OnigEncoding = UnsafeMutablePointer<OnigEncodingType>(&OnigEncodingUTF8)
+    static let ascii: OnigEncoding = UnsafeMutablePointer<OnigEncodingType>(&OnigEncodingASCII)
+}
+
 public final class OnigRegularExpression {
     var regexPointer: OnigRegex?
 
@@ -19,13 +24,12 @@ public final class OnigRegularExpression {
 
         regexPointer = nil
         var error = OnigErrorInfo()
-        var encoding = OnigEncodingUTF8
         patternChars.withUnsafeBufferPointer({ patternPointer in
             let result = onig_new(&regexPointer,
                                   patternPointer.baseAddress,
                                   patternPointer.baseAddress?.advanced(by: patternPointer.count),
                                   OnigOptionType(),
-                                  &encoding,
+                                  Encodings.utf8,
                                   OnigDefaultSyntax,
                                   &error)
 
@@ -140,11 +144,8 @@ public final class OnigRegularExpression {
     }
 
     class func initialize() {
-        var encoding = OnigEncodingUTF8
-        withUnsafeMutablePointer(to: &encoding, { useEncodings in
-            var encs: UnsafeMutablePointer<OnigEncodingTypeST>? = useEncodings
-            _ = onig_initialize(&encs, 1)
-        })
+        var encs: UnsafeMutablePointer<OnigEncodingTypeST>? = Encodings.utf8
+        _ = onig_initialize(&encs, 1)
     }
 }
 
